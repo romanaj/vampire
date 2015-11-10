@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include <fstream>      // std::ofstream
+
 #include "Kernel/Ordering.hpp"
 #include "Kernel/Inference.hpp"
 #include "Kernel/Clause.hpp"
@@ -22,6 +24,7 @@
 #include "SAT/LingelingInterfacing.hpp"
 #include "SAT/MinisatInterfacingNewSimp.hpp"
 #include "SAT/BufferedSolver.hpp"
+#include "SAT/DIMACS.hpp"
 
 #include "Lib/Environment.hpp"
 #include "Lib/Timer.hpp"
@@ -998,6 +1001,17 @@ MainLoopResult FiniteModelBuilder::runImpl()
     // pass clauses and assumption to SAT Solver
     {
       TimeCounter tc(TC_FMB_SAT_SOLVING);
+
+      {
+        BYPASSING_ALLOCATOR;
+        vstring filename = "fmb"+Int::toString(modelSize);
+        ofstream out(filename.c_str());
+        SATClauseList* clauses = nullptr;
+        SATClauseList::pushFromIterator(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)),clauses);
+        DIMACS::outputProblem(clauses,out);
+        out.close();
+      }
+
       _solver->addClausesIter(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)));
     }
 
@@ -1005,7 +1019,13 @@ MainLoopResult FiniteModelBuilder::runImpl()
     {
       env.statistics->phase = Statistics::FMB_SOLVING;
       TimeCounter tc(TC_FMB_SAT_SOLVING);
+
+      int saved = env.timer->elapsedMilliseconds();
+
       satResult = _solver->solve();
+
+      cout << "Done in: " <<  env.timer->elapsedMilliseconds()-saved << endl;
+
       env.statistics->phase = Statistics::FMB_CONSTRAINT_GEN;
     }
 
