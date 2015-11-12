@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include <stdlib.h>
+
 #include <fstream>      // std::ofstream
 
 #include "Kernel/Ordering.hpp"
@@ -1019,6 +1021,11 @@ MainLoopResult FiniteModelBuilder::runImpl()
     {
       env.statistics->phase = Statistics::FMB_SOLVING;
       TimeCounter tc(TC_FMB_SAT_SOLVING);
+
+      {
+        vstring lglapitrace = "=lingetrace"+Int::toString(modelSize);
+        setenv("LGLAPITRACE",lglapitrace.c_str(),1);
+      }
 
       int saved = env.timer->elapsedMilliseconds();
 
