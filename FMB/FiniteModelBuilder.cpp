@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+#include <stdlib.h>
+
 #include <fstream>      // std::ofstream
 
 #include "Kernel/Ordering.hpp"
@@ -1666,6 +1668,10 @@ MainLoopResult FiniteModelBuilder::runImpl()
         }
       }
 
+      {
+        vstring lglapitrace = "=lingetrace"+Int::toString(modelSize);
+        setenv("LGLAPITRACE",lglapitrace.c_str(),1);
+      }
       int saved = env.timer->elapsedMilliseconds();
       satResult = _solver->solveUnderAssumptions(assumptions);
       cout << "Done in: " <<  env.timer->elapsedMilliseconds()-saved << endl;
