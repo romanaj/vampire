@@ -1004,6 +1004,7 @@ MainLoopResult FiniteModelBuilder::runImpl()
     {
       TimeCounter tc(TC_FMB_SAT_SOLVING);
 
+      /*
       {
         BYPASSING_ALLOCATOR;
         vstring filename = "fmb"+Int::toString(modelSize);
@@ -1013,6 +1014,7 @@ MainLoopResult FiniteModelBuilder::runImpl()
         DIMACS::outputProblem(clauses,out);
         out.close();
       }
+      */
 
       _solver->addClausesIter(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)));
     }
@@ -1022,10 +1024,12 @@ MainLoopResult FiniteModelBuilder::runImpl()
       env.statistics->phase = Statistics::FMB_SOLVING;
       TimeCounter tc(TC_FMB_SAT_SOLVING);
 
+      /*
       {
         vstring lglapitrace = "=lingetrace"+Int::toString(modelSize);
         setenv("LGLAPITRACE",lglapitrace.c_str(),1);
       }
+      */
 
       int saved = env.timer->elapsedMilliseconds();
 

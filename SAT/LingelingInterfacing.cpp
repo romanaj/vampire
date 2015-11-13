@@ -99,7 +99,7 @@ void LingelingInterfacing::ensureVarCount(unsigned newVarCnt)
   // lingeling starts variables from 1, so maxvar == varcount    
   while(lglmaxvar(_solver) < (int)newVarCnt) {
     // make it frozen right away
-    lglfreeze(_solver, lglincvar(_solver));
+    lglincvar(_solver);
     _varCnt++;
   }
   
@@ -111,7 +111,7 @@ unsigned LingelingInterfacing::newVar()
   CALL("LingelingInterfacing::newVar");
   
   // just to do the same thing as ensureVarCount inside
-  lglfreeze(_solver, lglincvar(_solver));
+  lglincvar(_solver);
   
   return ++_varCnt; 
 }
@@ -211,7 +211,7 @@ void LingelingInterfacing::addClause(SATClause* cl)
     ASS(lglusable(_solver, v));
       
     lgladd(_solver, vampireLit2Lingeling(l));
-	  lglfreeze(_solver, v);
+
   }
   lgladd(_solver, 0); //add the marker for clause termination
 
