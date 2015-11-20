@@ -279,6 +279,11 @@ bool FiniteModelBuilder::reset(){
   }
   */
 /*
+  {
+    vstring lglapitrace = "=lingetrace"+Int::toString(size);
+    setenv("LGLAPITRACE",lglapitrace.c_str(),1);
+  }
+
   switch(_opt.satSolver()){
     case Options::SatSolver::VAMPIRE:
       _solver = new TWLSolver(_opt, true);
