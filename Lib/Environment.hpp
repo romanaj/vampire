@@ -30,7 +30,9 @@
 
 #include "Forwards.hpp"
 #include "Exception.hpp"
+#include "Array.hpp"
 #include "DHMap.hpp"
+#include "Vector.hpp"
 
 namespace Lib {
 
@@ -99,11 +101,14 @@ public:
   /** set to true when there are some interpreted operations */
   bool interpretedOperationsUsed;
 
+  void printFeatures();
 private:
   int _outputDepth;
   /** if non-zero, all output will go here */
   ostream* _priorityOutput;
   SyncPipe* _pipe;
+  // keep old feature vectors here
+  Array<Vector<int> *> _features;
 }; // class Environment
 
 extern Environment env;

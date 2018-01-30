@@ -184,8 +184,13 @@ void handleSignal (int sigNum)
 //      return;
 
     case SIGHUP:
-      if(System::shouldIgnoreSIGHUP()) {
-  return;
+      if(System::shouldIgnoreSIGHUP())
+      {
+        return;
+      }
+      else
+      {
+	System::terminateImmediately(VAMP_RESULT_STATUS_OTHER_SIGNAL);
       }
     case SIGILL:
     case SIGFPE:

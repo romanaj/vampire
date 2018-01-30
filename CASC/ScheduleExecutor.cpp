@@ -102,8 +102,16 @@ bool ScheduleExecutor::run(const Schedule &schedule, int terminationTime)
       pool = Pool::remove(process, pool);
       if(!code)
       {
+        if(std::getenv("VAMPIRE_DUMP_FEATURES"))
+        {
+          std::cerr << std::endl << "#SUCCESS" << std::endl;
+        }
         success = true;
         goto exit;
+      }
+      if(std::getenv("VAMPIRE_DUMP_FEATURES"))
+      {
+        std::cerr << std::endl << "#FAILURE" << std::endl << "#" << std::endl;
       }
     }
     // child stopped, re-insert it in the queue

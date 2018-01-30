@@ -213,6 +213,12 @@ void Multiprocessing::sleep(unsigned ms)
   }
 }
 
+void Multiprocessing::stop()
+{
+  CALL("Multiprocessing::stop");
+  ::raise(SIGSTOP);
+}
+
 void Multiprocessing::kill(pid_t child, int signal)
 {
   CALL("Multiprocessing::kill");

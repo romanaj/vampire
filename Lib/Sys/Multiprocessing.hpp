@@ -24,6 +24,7 @@ public:
   void registerForkHandlers(VoidFunc before, VoidFunc afterParent, VoidFunc afterChild);
 
   void sleep(unsigned ms);
+  void stop();
   void kill(pid_t child, int signal);
   void killNoCheck(pid_t child, int signal);
   pid_t poll_children(bool &stopped, bool &exited, int &code);

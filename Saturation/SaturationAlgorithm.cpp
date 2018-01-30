@@ -20,6 +20,8 @@
  * @file SaturationAlgorithm.cpp
  * Implementing SaturationAlgorithm class.
  */
+#include <cstdlib>
+#include <iostream>
 
 #include "Debug/RuntimeStatistics.hpp"
 
@@ -31,6 +33,7 @@
 #include "Lib/Timer.hpp"
 #include "Lib/VirtualIterator.hpp"
 #include "Lib/System.hpp"
+#include "Lib/Sys/Multiprocessing.hpp"
 
 #include "Indexing/LiteralIndexingStructure.hpp"
 
@@ -1153,9 +1156,16 @@ UnitList* SaturationAlgorithm::collectSaturatedSet()
  *
  * This function may throw RefutationFoundException and TimeLimitExceededException.
  */
+
 void SaturationAlgorithm::doOneAlgorithmStep()
 {
   CALL("SaturationAlgorithm::doOneAlgorithmStep");
+  static int step = 0;
+
+  if(std::getenv("VAMPIRE_DUMP_FEATURES"))
+  {
+    env.printFeatures();
+  }
 
   doUnprocessedLoop();
 
@@ -1189,6 +1199,11 @@ void SaturationAlgorithm::doOneAlgorithmStep()
   bool isActivated=activate(cl);
   if (!isActivated) {
     handleUnsuccessfulActivation(cl);
+  }
+
+  if(++step % 50 == 0)
+  {
+    Multiprocessing::instance()->stop();
   }
 }
 

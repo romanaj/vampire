@@ -276,8 +276,7 @@ float PortfolioProcessPriorityPolicy::staticPriority(vstring sliceCode)
 //should never be called
 float PortfolioProcessPriorityPolicy::dynamicPriority(pid_t pid)
 {
-  ASSERTION_VIOLATION;
-  return 0.;
+  return 0;
 }
 
 PortfolioSliceExecutor::PortfolioSliceExecutor(PortfolioMode *mode)
