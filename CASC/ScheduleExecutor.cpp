@@ -3,6 +3,7 @@
 #include "Lib/Array.hpp"
 #include "Lib/Environment.hpp"
 #include "Lib/List.hpp"
+#include "Lib/Predictor.hpp"
 #include "Lib/PriorityQueue.hpp"
 #include "Lib/System.hpp"
 #include "Lib/Sys/Multiprocessing.hpp"
@@ -52,6 +53,7 @@ private:
 bool ScheduleExecutor::run(const Schedule &schedule, int terminationTime)
 {
   CALL("ScheduleExecutor::run");
+  initializePredictor();
 
   PriorityQueue<Item> queue;
   Schedule::BottomFirstIterator it(schedule);
@@ -119,6 +121,7 @@ bool ScheduleExecutor::run(const Schedule &schedule, int terminationTime)
     {
       pool = Pool::remove(process, pool);
       float priority = _policy->dynamicPriority(process);
+      //std::cerr << priority << std::endl;
       queue.insert(priority, Item(process));
     }
 
@@ -164,12 +167,15 @@ pid_t ScheduleExecutor::spawn(vstring code, int terminationTime)
   // parent
   if(pid)
   {
+    registerForPrediction(pid);
     return pid;
   }
   // child
   else
   {
+    Multiprocessing::instance()->stop();
     _executor->runSlice(code, terminationTime);
     ASSERTION_VIOLATION; // should not return
+    return 0;
   }
 }

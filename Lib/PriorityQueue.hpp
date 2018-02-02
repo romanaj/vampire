@@ -19,11 +19,11 @@ class PriorityPairComparator
 public:
   static inline Lib::Comparison compare(float key, PriorityPair<T> value)
   {
-    if(key < value.priority)
+    if(key > value.priority)
     {
       return Lib::LESS;
     }
-    else if(key > value.priority)
+    else if(key < value.priority)
     {
       return Lib::GREATER;
     }

@@ -178,6 +178,7 @@ VL_OBJ= Lib/Allocator.o\
         Lib/MemoryLeak.o\
         Lib/MultiCounter.o\
         Lib/NameArray.o\
+	Lib/Predictor.o\
         Lib/Random.o\
         Lib/StringUtils.o\
         Lib/System.o\

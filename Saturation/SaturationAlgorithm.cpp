@@ -1160,12 +1160,6 @@ UnitList* SaturationAlgorithm::collectSaturatedSet()
 void SaturationAlgorithm::doOneAlgorithmStep()
 {
   CALL("SaturationAlgorithm::doOneAlgorithmStep");
-  static int step = 0;
-
-  if(std::getenv("VAMPIRE_DUMP_FEATURES"))
-  {
-    env.printFeatures();
-  }
 
   doUnprocessedLoop();
 
@@ -1201,10 +1195,7 @@ void SaturationAlgorithm::doOneAlgorithmStep()
     handleUnsuccessfulActivation(cl);
   }
 
-  if(++step % 50 == 0)
-  {
-    Multiprocessing::instance()->stop();
-  }
+  env.saveFeatures();
 }
 
 
