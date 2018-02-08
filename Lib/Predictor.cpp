@@ -8,7 +8,9 @@
 
 using namespace Lib;
 
-#define MAX_PIDS 1000
+static const unsigned MAX_PIDS = 1000;
+static const unsigned FEATURE_DIMENSIONS = 376;
+static const unsigned NUM_BUCKETS = 10;
 
 static pid_t *pids = nullptr;
 static float *predictions = nullptr;
@@ -69,16 +71,16 @@ static unsigned pid_index(pid_t pid)
 }
 
 // don't blow the stack
-static float inputs[3760];
+static float inputs[FEATURE_DIMENSIONS * NUM_BUCKETS];
 static float predict(float *featureLog, unsigned records)
 {
   CALL("predict")
-  for(unsigned input = 0; input < 3760; ++input)
+  for(unsigned input = 0; input < FEATURE_DIMENSIONS * NUM_BUCKETS; ++input)
   {
     inputs[input] = 0;
   }
   // produce a "shape" from the log
-  unsigned bucket_size = records / 10;
+  unsigned bucket_size = records / NUM_BUCKETS;
   if(bucket_size == 0)
   {
     return 1.0;
@@ -87,34 +89,35 @@ static float predict(float *featureLog, unsigned records)
   for(unsigned record = 0; record < records; ++record)
   {
     unsigned bucket = record / bucket_size;
-    ASS_L(bucket, 10)
-    for(unsigned row = 0; row < 376; ++row)
+    ASS_L(bucket, NUM_BUCKETS)
+    for(unsigned row = 0; row < FEATURE_DIMENSIONS; ++row)
     {
-        inputs[376 * bucket + row] += featureLog[376 * record + row];
+        inputs[FEATURE_DIMENSIONS * bucket + row] += featureLog[FEATURE_DIMENSIONS * record + row];
     }
   }
 
   // scale all totals back to the mean
-  for(unsigned i = 0; i < 3760; ++i)
+  for(unsigned i = 0; i < FEATURE_DIMENSIONS * NUM_BUCKETS; ++i)
   {
     inputs[i] /= bucket_size;
   }
 
   // scale inputs to normalized values
-  for(unsigned i = 0; i < 3760; ++i)
+  for(unsigned i = 0; i < FEATURE_DIMENSIONS * NUM_BUCKETS; ++i)
   {
-    unsigned row = i % 376;
+    unsigned row = i % FEATURE_DIMENSIONS;
     inputs[i] -= MEAN_FEATURES[row];
     inputs[i] /= SCALE_FEATURES[row];
   }
 
   // compute dot product of weights and inputs
   float result = 0;
-  for(unsigned i = 0; i < 3760; ++i)
+  for(unsigned i = 0; i < FEATURE_DIMENSIONS * NUM_BUCKETS; ++i)
   {
     result += NN_WEIGHTS[i] * inputs[i];
   }
 
+  // sigmoid activation
   result = 1.0 / (1.0 + std::exp(-result));
   return result;
 }

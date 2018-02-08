@@ -101,8 +101,10 @@ public:
 
   // priority functions
   unsigned schedulerId;
-  void printFeatures(std::ostream &out);
   void saveFeatures();
+# ifdef VDUMP
+  void dumpFeatures(bool success);
+# endif
 private:
   int _outputDepth;
   /** if non-zero, all output will go here */

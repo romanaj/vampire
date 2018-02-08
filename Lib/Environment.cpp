@@ -40,6 +40,11 @@
 #include "Environment.hpp"
 #include "Predictor.hpp"
 
+static const size_t FEATURE_DIMENSIONS = 376;
+static const unsigned SAMPLE_FREQUENCY = 10;
+static const unsigned UPDATE_FREQUENCY = 10;
+static const size_t MAX_FEATURE_RECORDS = 10000;
+
 namespace Lib
 {
 
@@ -68,7 +73,7 @@ Environment::Environment()
   signature = new Signature;
   sharing = new TermSharing;
 
-  _features = new float[1000 * 376];
+  _features = new float[MAX_FEATURE_RECORDS * 376];
   timer = Timer::instance();
   timer->start();
 } // Environment::Environment
@@ -354,38 +359,59 @@ void Environment::setPriorityOutput(ostream* stm)
   DUMP_OPT(newCNF());\
   DUMP(Allocator::getUsedMemory() / 1024)
 
-void Environment::printFeatures(std::ostream &out)
-{
-  CALL("Environment::printFeatures");
-# define DUMP(x) out << x << ",";
-  DO_DUMP
-# undef DUMP
-  out << std::endl;
-}
-
+static unsigned feature_records;
 void Environment::saveFeatures()
 {
   CALL("Environment::saveFeatures");
   static int step = 0;
 
-  if(step % 10 != 0)
+  if(step % SAMPLE_FREQUENCY != 0)
   {
     step++;
     return;
   }
 
-  unsigned idx = step / 10;
-  ASS_L(idx, 1000);
-  float *writer = _features + 376 * idx;
+  feature_records = step / SAMPLE_FREQUENCY;
+  ASS_L(feature_records, MAX_FEATURE_RECORDS);
+  if(feature_records > MAX_FEATURE_RECORDS)
+  {
+	  return;
+  }
+
+  float *writer = _features + FEATURE_DIMENSIONS * feature_records;
 # define DUMP(x) *writer++ = static_cast<float>(x);
   DO_DUMP
 # undef DUMP
-  if(idx > 0 && idx % 10 == 0)
+  if(feature_records > 0 && feature_records % UPDATE_FREQUENCY == 0)
   {
-    updatePrediction(_features, idx);
+    updatePrediction(_features, feature_records);
+    Timer::instance()->stop();
     Multiprocessing::instance()->stop();
+    Timer::instance()->start();
   }
   step++;
 }
+
+#ifdef VDUMP
+#include <cstdlib>
+#include <fstream>
+
+void Environment::dumpFeatures(bool success)
+{
+  char templ[100];
+  strcpy(templ, success ? "/tmp/vdump-success-XXXXXX" : "/tmp/vdump-failure-XXXXXX");
+  std::ofstream out(mktemp(templ));
+
+  for(unsigned i = 0; i < feature_records; ++i)
+  {
+    out << _features[FEATURE_DIMENSIONS * i];
+    for(unsigned j = 1; j < FEATURE_DIMENSIONS; ++j)
+    {
+      out << "," << _features[FEATURE_DIMENSIONS * i + j];
+    }
+    out << std::endl;
+  }
+}
+#endif
 
 }
