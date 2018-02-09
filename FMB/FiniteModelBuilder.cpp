@@ -309,7 +309,9 @@ bool FiniteModelBuilder::reset(){
 
   // needs to be redone for each size as we use this to pick the number of
   // things to order and the constants to ground with 
-  createSymmetryOrdering();
+  if(env.options->fmbSymmetryExperiment() != 1){
+    createSymmetryOrdering();
+  }
 
   return true;
 }
@@ -347,6 +349,9 @@ void FiniteModelBuilder::createSymmetryOrdering()
       _sortedGroundedTerms[s].push(g);
       //cout << "Adding " << g.toString()  << " to " << s << endl;
     }
+
+    // ignore non-constant terms if in experiment 2
+    if(env.options->fmbSymmetryExperiment() != 2){
 
     // Next add some groundings of function symbols
     // Currently these will be uniform groundings i.e. if we have arity 2 then we consider f(1,1),f(2,2)
@@ -422,7 +427,6 @@ void FiniteModelBuilder::createSymmetryOrdering()
           if(outOfBounds) continue;
   
           _sortedGroundedTerms[s].push(g);
-          //cout << "Adding " << g.toString() << " to " << s << endl;
         }
       }
     }
@@ -431,6 +435,7 @@ void FiniteModelBuilder::createSymmetryOrdering()
       break;
     }
 
+  }
   }
 }
 
@@ -1626,7 +1631,9 @@ MainLoopResult FiniteModelBuilder::runImpl()
 #if VTRACE_FMB
     cout << "SYM DEFS" << endl;
 #endif
-    addNewSymmetryAxioms();
+    if(env.options->fmbSymmetryExperiment() != 1){
+      addNewSymmetryAxioms();
+    }
     
 #if VTRACE_FMB
     cout << "TOTAL DEFS" << endl;
