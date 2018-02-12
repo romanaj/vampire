@@ -282,6 +282,9 @@ public:
     OCCURENCE,
     INPUT_USAGE,
     PREPROCESSED_USAGE,
+    REVERSE_INPUT_USAGE,
+    REVERSE_PREPROCESSED_USAGE,
+    ARITY,
     RANDOM
   };
   enum class FMBAdjustSorts : unsigned int {
