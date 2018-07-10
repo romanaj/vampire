@@ -709,7 +709,7 @@ void clausifyMode(bool theory)
   bool printed_conjecture = false;
   while (cit.hasNext()) {
     Clause* cl = cit.next();
-    cl = simplifier.simplify(cl);
+    // cl = simplifier.simplify(cl);
     if (!cl) {
       continue;
     }
