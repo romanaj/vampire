@@ -344,9 +344,9 @@ public:
     * add those with rank smaller than preset rank etc.
     */
   enum class CombinatorAdditionBy : unsigned int {
-    ALL = 0,
-    RANK = 1,
-    NUM_OF_BASIC_SORTS = 2
+    ALL = 0, //Add combinators at all input types and iterate this proccess until limit reached
+    RANK = 1, //Only add combinators of order less than some pre-defined limit (in code, not open to user)
+    NUM_OF_BASIC_SORTS = 2 //Only add combinators that contain fewer than 'n' sorts, where 'n' is set in the code
   };
   
   /**

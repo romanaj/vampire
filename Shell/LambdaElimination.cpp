@@ -66,7 +66,6 @@ void LambdaElimination::addFunctionExtensionalityAxioms(UnitList*& units){
     extAxiom = new BinaryFormula(IMP, equalityForm, equalityForm2);
     extAxiom = new QuantifiedFormula(FORALL, varList,sortList, extAxiom); 
 
-    //INFERENCE WRONG!!!
     Inference* notInference;
     notInference = new Inference(Inference::FUNC_EXT_AXIOM);
     
@@ -92,7 +91,6 @@ void LambdaElimination::addBooleanExtensionalityAxiom(UnitList*& units){
   boolExtAxiom = new BinaryFormula(IMP, boolExtAxiom , createEquality(var1, var2, Sorts::SRT_BOOL));
   boolExtAxiom = new QuantifiedFormula(FORALL, varList,sortList, boolExtAxiom); 
 
-  //INFERENCE WRONG!!!
   Inference* boolExtInf;
   boolExtInf = new Inference(Inference::BOOL_EXT_AXIOM);
   
@@ -534,22 +532,22 @@ TermList LambdaElimination::processBeyondLambda(Term* term)
               while(argsIt.hasNext()){
                   Formula* arg = argsIt.next();
                   if(arg->connective() == Connective::BOOL_TERM){
-                      form = arg->getBooleanTerm();
-                      if(form.isTerm()){
-                        form = processBeyondLambda(form.term());
-                      }
+                    form = arg->getBooleanTerm();
+                    if(form.isTerm()){
+                      form = processBeyondLambda(form.term());
+                    }
                   }else{
-                      form = processBeyondLambda(Term::createFormula(arg));
+                    form = processBeyondLambda(Term::createFormula(arg));
                   }
                   if(oddNumber){
-                      if(first){
-                        buildFuncApp(app1arg, constant, form, appTerm);
-                        first = false;
-                      }else{
-                        buildFuncApp(app1arg, constant, appTerm, appTerm); 
-                        buildFuncApp(app2arg, appTerm, form, appTerm); 
-                      }
-                      oddNumber = false;
+                    if(first){
+                      buildFuncApp(app1arg, constant, form, appTerm);
+                      first = false;
+                    }else{
+                      buildFuncApp(app1arg, constant, appTerm, appTerm); 
+                      buildFuncApp(app2arg, appTerm, form, appTerm); 
+                    }
+                    oddNumber = false;
                   }else{
                     buildFuncApp(app2arg, appTerm, form, appTerm);
                     oddNumber = true;
@@ -1217,23 +1215,17 @@ void LambdaElimination::buildFuncApp(unsigned symbol, TermList arg1, TermList ar
     Formula* notAxiom;
     
     TermList functionApplied;   
-    
-    TermList var1 = TermList(0, false);
-    List<int>* varList = new List<int>(var1.var());
-    List<unsigned>* sortList = new List<unsigned>(Sorts::SRT_BOOL);
-     
+       
     unsigned appFun = introduceAppSymbol(notsort, Sorts::SRT_BOOL, Sorts::SRT_BOOL);
-    buildFuncApp(appFun, constant, var1, functionApplied);
-     
-    Formula* negatedVar = new NegatedFormula(toEquality(var1));
-    notAxiom = toEquality(functionApplied);
-    notAxiom = new BinaryFormula(IFF, notAxiom, negatedVar);
-    notAxiom = new QuantifiedFormula(FORALL, varList,sortList, notAxiom); 
-    
-    Inference* notInference;
-    notInference = new Inference(Inference::LAMBDA_ELIMINATION_NOT);
-    
-    addAxiom(new FormulaUnit(notAxiom, notInference, Unit::AXIOM));  
+
+    buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);     
+    notAxiom = new NegatedFormula(toEquality(functionApplied));    
+    Inference* notInference = new Inference(Inference::LAMBDA_ELIMINATION_NOT);
+    addAxiom(new FormulaUnit(notAxiom, notInference, Unit::AXIOM)); 
+
+    buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);     
+    notAxiom = toEquality(functionApplied);    
+    addAxiom(new FormulaUnit(notAxiom, notInference, Unit::AXIOM));     
  }
  
  void LambdaElimination::addEqualityAxiom(TermList equals, unsigned argsSort, unsigned equalsSort)
@@ -1275,41 +1267,119 @@ void LambdaElimination::buildFuncApp(unsigned symbol, TermList arg1, TermList ar
  {
     CALL("LambdaElimination::addBinaryConnAxiom"); 
     
-    Formula* binaryConnAxiom;
-    Formula* varFormula;
+    Formula* binConn1;
+    Formula* binConn2;
+    Formula* binConn3;
+    Formula* binConn4;
     
     TermList functionApplied;
     
-    TermList var1 = TermList(0, false);
-    TermList var2 = TermList(1, false);
-     
-    List<int>* varList = new List<int>(var1.var());
-    List<unsigned>* sortList = new List<unsigned>(Sorts::SRT_BOOL);
-    varList = varList->addLast(varList, var2.var());
-    sortList = sortList->addLast(sortList, Sorts::SRT_BOOL);
+    unsigned appFun = introduceAppSymbol(connSort, Sorts::SRT_BOOL, appedOnce);
+    unsigned appFun2 = introduceAppSymbol(appedOnce, Sorts::SRT_BOOL, range(appedOnce));
+
     
-    unsigned appFun = introduceAppSymbol( connSort, Sorts::SRT_BOOL, appedOnce);
-    buildFuncApp(appFun, constant, var1, functionApplied);
-    
-    appFun = introduceAppSymbol(appedOnce, Sorts::SRT_BOOL, range(appedOnce));
-    buildFuncApp(appFun, functionApplied, var2, functionApplied);
-    
-    if(conn == AND || conn == OR){
-        FormulaList* args = new FormulaList(toEquality(var1));
-        args = FormulaList::cons(toEquality(var2), args);
-        varFormula = new JunctionFormula(conn, args);
-    }else{
-        varFormula = new BinaryFormula(conn, toEquality(var1), toEquality(var2));
+    switch(conn){
+      case AND:{
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn1 = toEquality(functionApplied);
+        
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn2 =  new NegatedFormula(toEquality(functionApplied));
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn3 =  new NegatedFormula(toEquality(functionApplied));
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn4 =  new NegatedFormula(toEquality(functionApplied));
+        break;
+      }
+      case OR:{
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn1 = toEquality(functionApplied);
+        
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn2 = toEquality(functionApplied);
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn3 = toEquality(functionApplied);
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn4 =  new NegatedFormula(toEquality(functionApplied));      
+        break;
+     } 
+     case XOR: {
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn1 = new NegatedFormula(toEquality(functionApplied)); 
+        
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn2 = toEquality(functionApplied);
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn3 = toEquality(functionApplied);
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn4 =  new NegatedFormula(toEquality(functionApplied));
+        break;
+      }    
+      case IMP:{
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn1 = toEquality(functionApplied);
+        
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn2 = new NegatedFormula(toEquality(functionApplied)); 
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn3 = toEquality(functionApplied);
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn4 =  toEquality(functionApplied);
+        break;
+      } 
+      case IFF:{
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn1 = toEquality(functionApplied);
+        
+        buildFuncApp(appFun, constant, TermList(Term::foolTrue()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn2 = new NegatedFormula(toEquality(functionApplied));
+
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolTrue()), functionApplied);
+        binConn3 = new NegatedFormula(toEquality(functionApplied));
+        
+        buildFuncApp(appFun, constant, TermList(Term::foolFalse()), functionApplied);    
+        buildFuncApp(appFun2, functionApplied, TermList(Term::foolFalse()), functionApplied);
+        binConn4 =  toEquality(functionApplied);
+        break; 
+      }
+      default:
+        ASSERTION_VIOLATION;
     }
+   
+    Inference* binConInf = new Inference(Inference::LAMBDA_ELIMINATION_BIN_CON);
     
-    binaryConnAxiom = toEquality(functionApplied);
-    binaryConnAxiom = new BinaryFormula(IFF, binaryConnAxiom, varFormula);
-    binaryConnAxiom = new QuantifiedFormula(FORALL, varList, sortList, binaryConnAxiom); 
-    
-    Inference* binConInf;
-    binConInf = new Inference(Inference::LAMBDA_ELIMINATION_BIN_CON);
-    
-    addAxiom(new FormulaUnit(binaryConnAxiom, binConInf, Unit::AXIOM));  
+    addAxiom(new FormulaUnit(binConn1, binConInf, Unit::AXIOM));  
+    addAxiom(new FormulaUnit(binConn2, binConInf, Unit::AXIOM));  
+    addAxiom(new FormulaUnit(binConn3, binConInf, Unit::AXIOM));  
+    addAxiom(new FormulaUnit(binConn4, binConInf, Unit::AXIOM));  
+
  }
  
  Formula* LambdaElimination::createEquality(TermList t1, TermList t2, unsigned sort) {

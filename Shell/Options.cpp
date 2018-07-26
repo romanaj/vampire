@@ -1019,7 +1019,7 @@ void Options::Options::init()
       _lookup.insert(&_booleanExtensionality);
       _booleanExtensionality.tag(OptionTag::INFERENCES); //This is not inference, change!
       
-      _combinatorElimination = ChoiceOptionValue<CombElimination>("combinator_elimination","combelim",
+      _combinatorElimination = ChoiceOptionValue<CombElimination>("deal_with_combinators","dwcombs",
                                                                    CombElimination::AXIOMS,
                                                                    {"axioms","inference_rules","both"});
       _combinatorElimination.description=
