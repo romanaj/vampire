@@ -555,6 +555,12 @@ Clause* PISIGMARemovalISE::simplify(Clause* c)
   {
     CALL("CombinatorEliminationISE::simplify");
    
+    //in the case where we are running with axioms and inference rules,
+    //we do not want the inference rules to act on the axioms
+    if(premise->isHOLADescendant()){
+      return premise;
+    }
+   
     TermList combinatorTerm;
     TermList newTerm;
     unsigned literalPosition = 0;
