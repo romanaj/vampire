@@ -1540,6 +1540,7 @@ void FiniteModelBuilder::addSATClause(SATClause* cl)
 
 }
 
+
 MainLoopResult FiniteModelBuilder::runImpl()
 {
   CALL("FiniteModelBuilder::runImpl");
@@ -1639,16 +1640,22 @@ MainLoopResult FiniteModelBuilder::runImpl()
     {
       TimeCounter tc(TC_FMB_SAT_SOLVING);
 
-      /*
       {
         BYPASSING_ALLOCATOR;
-        vstring filename = "fmb"+Int::toString(modelSize);
-        ofstream out(filename.c_str());
+        vstringstream file_buffer;
+        file_buffer << "fmb";
+        for(unsigned i=0;i<_distinctSortSizes.size();i++){
+          file_buffer << _distinctSortSizes[i];
+          if(i+1 < _distinctSortSizes.size()) file_buffer << "-";
+        }
+
+        ofstream out(file_buffer.str().c_str());
         SATClauseList* clauses = nullptr;
         SATClauseList::pushFromIterator(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)),clauses);
         DIMACS::outputProblem(clauses,out);
         out.close();
       }
+      /*
       */
 
       _solver->addClausesIter(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)));
