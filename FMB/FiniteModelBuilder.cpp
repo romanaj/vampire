@@ -1643,11 +1643,12 @@ MainLoopResult FiniteModelBuilder::runImpl()
       {
         BYPASSING_ALLOCATOR;
         vstringstream file_buffer;
-        file_buffer << "fmb";
+        file_buffer << env.options->inputFile() << "-fmb-";
         for(unsigned i=0;i<_distinctSortSizes.size();i++){
           file_buffer << _distinctSortSizes[i];
           if(i+1 < _distinctSortSizes.size()) file_buffer << "-";
         }
+        file_buffer << ".dimacs";
 
         ofstream out(file_buffer.str().c_str());
         SATClauseList* clauses = nullptr;
