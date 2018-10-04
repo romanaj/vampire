@@ -133,6 +133,9 @@ private:
   // resets all structures and SAT solver using _sortModelSizes 
   bool reset();
 
+  //writes _clausesToBeAdded under assumptions to a dimacs file
+  void writeDimacsToFile(const SATLiteralStack& assumptions);
+
   // make the symmetry orderings
   void createSymmetryOrdering();
   // The per-sort ordering of grounded terms used for symmetry breaking

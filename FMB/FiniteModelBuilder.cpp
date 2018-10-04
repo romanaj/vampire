@@ -1612,6 +1612,47 @@ void FiniteModelBuilder::addSATClause(SATClause* cl)
 
 }
 
+void FiniteModelBuilder::writeDimacsToFile(const SATLiteralStack& assumptions) {
+  TimeCounter tc(TC_FMB_SAT_SOLVING);
+  {
+    vstringstream file_buffer;
+    file_buffer << env.options->inputFile() << "-fmb-";
+    for(unsigned i=0;i<_distinctSortSizes.size();i++){
+      file_buffer << _distinctSortSizes[i];
+      if(i+1 < _distinctSortSizes.size()) file_buffer << "-";
+    }
+    file_buffer << ".dimacs";
+
+    ofstream out(file_buffer.str().c_str());
+    SATClauseList* clauses = nullptr;
+    SATClauseList::pushFromIterator(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)),clauses);
+
+    //need to put the clauses we introduce for the assupmtions into a seperate list to deallocate them later
+    SATClauseStack assumption_clauses;
+    {
+      SATLiteralStack::ConstIterator it = SATLiteralStack::ConstIterator(assumptions);
+      while (it.hasNext()) {
+        SATClause* cl = new(1) SATClause(1,true);
+        (*cl)[0]=it.next();
+        assumption_clauses.push(cl);
+      }
+    }
+    SATClauseList::pushFromIterator(pvi(SATClauseStack::ConstIterator(assumption_clauses)),clauses);
+    DIMACS::outputProblem(clauses,out);
+    out.close();
+
+    /* 
+    { //deallocate assumption clauses
+      SATClauseStack::Iterator it = SATClauseStack::Iterator(assumption_clauses);
+      while (it.hasNext()) {
+        delete it.next();
+      }
+    }
+    */
+  }
+  _solver->addClausesIter(pvi(SATClauseStack::ConstIterator(_clausesToBeAdded)));
+}
+
 
 MainLoopResult FiniteModelBuilder::runImpl()
 {
@@ -1756,6 +1797,8 @@ MainLoopResult FiniteModelBuilder::runImpl()
           assumptions.push(SATLiteral(instancesMarker_offset+i,1));
         }
       }
+
+      writeDimacsToFile(assumptions);
 
       /*
       {
