@@ -778,6 +778,13 @@ void Options::Options::init()
     _lookup.insert(&_fmbModelRestrictions);
     _fmbModelRestrictions.setExperimental();
 
+    _fmbKeepDimacs = ChoiceOptionValue<FMBKeepDimacs>("fmb_keep_dimacs","fmbkd",
+                                                     FMBKeepDimacs::OFF,
+                                                     {"off","on"});
+    _fmbKeepDimacs.description = "";
+    _lookup.insert(&_fmbKeepDimacs);
+    _fmbKeepDimacs.setExperimental();
+
     _fmbAdjustSorts = ChoiceOptionValue<FMBAdjustSorts>("fmb_adjust_sorts","fmbas",
                                                            FMBAdjustSorts::GROUP,
                                                            {"off","expand","group","predicate","function"});

@@ -1799,7 +1799,9 @@ MainLoopResult FiniteModelBuilder::runImpl()
         }
       }
 
-      writeDimacsToFile(assumptions);
+      if (env.options->fmbKeepDimacs() == Options::FMBKeepDimacs::ON) {
+        writeDimacsToFile(assumptions);
+      }
 
       /*
       {

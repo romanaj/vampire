@@ -291,6 +291,10 @@ public:
     STRICT,
     RELAXED
   };
+  enum class FMBKeepDimacs : unsigned int {
+    OFF,
+    ON
+  };
   enum class FMBAdjustSorts : unsigned int {
     OFF,
     EXPAND,
@@ -1847,6 +1851,7 @@ public:
   unsigned fmbSizeWeightRatio() const { return _fmbSizeWeightRatio.actualValue; }
   FMBEnumerationStrategy fmbEnumerationStrategy() const { return _fmbEnumerationStrategy.actualValue; }
   FMBModelRestrictions fmbModelRestrictions() const { return _fmbModelRestrictions.actualValue; }
+  FMBKeepDimacs fmbKeepDimacs() const { return _fmbKeepDimacs.actualValue; }
 
   bool flattenTopLevelConjunctions() const { return _flattenTopLevelConjunctions.actualValue; }
   LTBLearning ltbLearning() const { return _ltbLearning.actualValue; }
@@ -2268,6 +2273,7 @@ private:
   ChoiceOptionValue<FMBSymbolOrders> _fmbSymmetryOrderSymbols;
   ChoiceOptionValue<FMBAdjustSorts> _fmbAdjustSorts;
   ChoiceOptionValue<FMBModelRestrictions> _fmbModelRestrictions;
+  ChoiceOptionValue<FMBKeepDimacs> _fmbKeepDimacs;
   BoolOptionValue _fmbDetectSortBounds;
   UnsignedOptionValue _fmbDetectSortBoundsTimeLimit;
   UnsignedOptionValue _fmbSizeWeightRatio;
