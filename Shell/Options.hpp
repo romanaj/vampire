@@ -287,6 +287,10 @@ public:
     ARITY,
     RANDOM
   };
+  enum class FMBModelRestrictions : unsigned int {
+    STRICT,
+    RELAXED
+  };
   enum class FMBAdjustSorts : unsigned int {
     OFF,
     EXPAND,
@@ -1842,6 +1846,7 @@ public:
   unsigned fmbDetectSortBoundsTimeLimit() const { return _fmbDetectSortBoundsTimeLimit.actualValue; }
   unsigned fmbSizeWeightRatio() const { return _fmbSizeWeightRatio.actualValue; }
   FMBEnumerationStrategy fmbEnumerationStrategy() const { return _fmbEnumerationStrategy.actualValue; }
+  FMBModelRestrictions fmbModelRestrictions() const { return _fmbModelRestrictions.actualValue; }
 
   bool flattenTopLevelConjunctions() const { return _flattenTopLevelConjunctions.actualValue; }
   LTBLearning ltbLearning() const { return _ltbLearning.actualValue; }
@@ -2262,6 +2267,7 @@ private:
   ChoiceOptionValue<FMBWidgetOrders> _fmbSymmetryWidgetOrders;
   ChoiceOptionValue<FMBSymbolOrders> _fmbSymmetryOrderSymbols;
   ChoiceOptionValue<FMBAdjustSorts> _fmbAdjustSorts;
+  ChoiceOptionValue<FMBModelRestrictions> _fmbModelRestrictions;
   BoolOptionValue _fmbDetectSortBounds;
   UnsignedOptionValue _fmbDetectSortBoundsTimeLimit;
   UnsignedOptionValue _fmbSizeWeightRatio;

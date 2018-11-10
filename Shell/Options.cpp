@@ -771,6 +771,13 @@ void Options::Options::init()
     _lookup.insert(&_fmbSymmetryWidgetOrders);
     _fmbSymmetryWidgetOrders.setExperimental();
 
+    _fmbModelRestrictions = ChoiceOptionValue<FMBModelRestrictions>("fmb_model_restrictions","fmbmr",
+                                                     FMBModelRestrictions::STRICT,
+                                                     {"strict","relaxed"});
+    _fmbModelRestrictions.description = "";
+    _lookup.insert(&_fmbModelRestrictions);
+    _fmbModelRestrictions.setExperimental();
+
     _fmbAdjustSorts = ChoiceOptionValue<FMBAdjustSorts>("fmb_adjust_sorts","fmbas",
                                                            FMBAdjustSorts::GROUP,
                                                            {"off","expand","group","predicate","function"});

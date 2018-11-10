@@ -1364,6 +1364,7 @@ void FiniteModelBuilder::addNewSymmetryCanonicityAxioms(unsigned size,
   CALL("FiniteModelBuilder::addNewSymmetryCanonicityAxioms");
 
   if(size<=1) return;
+  if(size<=2 && env.options->fmbModelRestrictions() == Options::FMBModelRestrictions::RELAXED) return;
 
   unsigned w = _symmetryRatio * maxSize; 
   if(w > groundedTerms.length()){
