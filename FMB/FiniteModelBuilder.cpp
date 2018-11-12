@@ -447,6 +447,7 @@ void FiniteModelBuilder::createSymmetryOrdering()
           _sortedGroundedTerms[s].push(g);
         }
       }
+      break;
     }
     case Options::FMBWidgetOrders::OTHER:
       NOT_IMPLEMENTED;
