@@ -1364,8 +1364,10 @@ void FiniteModelBuilder::addNewSymmetryCanonicityAxioms(unsigned size,
 {
   CALL("FiniteModelBuilder::addNewSymmetryCanonicityAxioms");
 
+  bool relaxed = env.options->fmbModelRestrictions() == Options::FMBModelRestrictions::RELAXED;
+
   if(size<=1) return;
-  if(size<=2 && env.options->fmbModelRestrictions() == Options::FMBModelRestrictions::RELAXED) return;
+  if(size<=2 && relaxed) return;
 
   unsigned w = _symmetryRatio * maxSize; 
   if(w > groundedTerms.length()){
@@ -1379,11 +1381,20 @@ void FiniteModelBuilder::addNewSymmetryCanonicityAxioms(unsigned size,
       GroundedTerm gti = groundedTerms[i];
       unsigned arityi = env.signature->functionArity(gti.f);
 
-      if(arityi>0) return;
+      if(arityi>0 && !relaxed) return;
 
       static DArray<unsigned> grounding_i;
       grounding_i.ensure(arityi+1);
-      for(unsigned a=0;a<arityi;a++){ grounding_i[a]=gti.grounding[a];}
+      for(unsigned a=0;a<arityi;a++){
+        unsigned arg_a = gti.grounding[a];
+
+        // this is important for soundness
+        if (relaxed && (arg_a == size-1)) {
+          return;
+        }
+
+        grounding_i[a]= arg_a;
+      }
       grounding_i[arityi]=size;
 
       // stating canonicity for an i-th term of "small index" can be skipped
