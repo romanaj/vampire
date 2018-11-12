@@ -1614,8 +1614,12 @@ void FiniteModelBuilder::addSATClause(SATClause* cl)
 }
 
 void FiniteModelBuilder::writeDimacsToFile(const SATLiteralStack& assumptions) {
+  CALL("FiniteModelBuilder::writeDimacsToFile");
+
   TimeCounter tc(TC_FMB_SAT_SOLVING);
   {
+    BYPASSING_ALLOCATOR;
+
     vstringstream file_buffer;
     file_buffer << env.options->inputFile() << "-fmb-";
     for(unsigned i=0;i<_distinctSortSizes.size();i++){
