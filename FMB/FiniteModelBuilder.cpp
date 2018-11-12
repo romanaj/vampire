@@ -1385,6 +1385,14 @@ void FiniteModelBuilder::addNewSymmetryCanonicityAxioms(unsigned size,
       grounding_i.ensure(arityi+1);
       for(unsigned a=0;a<arityi;a++){ grounding_i[a]=gti.grounding[a];}
       grounding_i[arityi]=size;
+
+      // stating canonicity for an i-th term of "small index" can be skipped
+      // since it will be constrained to live within the first i elements of the model due to ordering
+      if (relaxed && i+1 < size) {
+        // CAREFUL: the for-loop needs to run from i=1 anyway, due to the above check
+        continue;
+      }
+
       satClauseLits.push(getSATLiteral(gti.f,grounding_i,false,true));
  
       //cout << "Adding canon for " << gti.toString() << " and size " << size << endl;
