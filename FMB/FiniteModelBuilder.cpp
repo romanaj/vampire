@@ -1344,7 +1344,7 @@ void FiniteModelBuilder::addNewSymmetryOrderingAxioms(unsigned size,
   grounding.ensure(arity+1);
   for(unsigned i=0;i<arity;i++) grounding[i] = gt.grounding[i];
 
-  //cout << "Add symmetry ordering for " << gt.toString() << endl;
+  //cout << "Add symmetry ordering for " << gt.toString() << " and size " << size << endl;
 
   static SATLiteralStack satClauseLits;
   satClauseLits.reset(); 
@@ -1387,7 +1387,7 @@ void FiniteModelBuilder::addNewSymmetryCanonicityAxioms(unsigned size,
       grounding_i[arityi]=size;
       satClauseLits.push(getSATLiteral(gti.f,grounding_i,false,true));
  
-      //cout << "Adding cannon for " << gti.toString() << endl;
+      //cout << "Adding canon for " << gti.toString() << " and size " << size << endl;
 
       for(unsigned j=0;j<i;j++){
         GroundedTerm gtj = groundedTerms[j];
