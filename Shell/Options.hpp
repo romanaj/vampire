@@ -1962,6 +1962,7 @@ public:
   int weightRatio() const { return _ageWeightRatio.otherValue; }
   void setWeightRatio(int v){ _ageWeightRatio.otherValue = v; }
   bool literalMaximalityAftercheck() const { return _literalMaximalityAftercheck.actualValue; }
+  bool randomAWR() const { return _randomAWR.actualValue; }
   bool superpositionFromVariables() const { return _superpositionFromVariables.actualValue; }
   EqualityProxy equalityProxy() const { return _equalityProxy.actualValue; }
   RuleActivity equalityResolutionWithDeletion() const { return _equalityResolutionWithDeletion.actualValue; }
@@ -2209,6 +2210,7 @@ private:
   BoolOptionValue _encode;
 
   RatioOptionValue _ageWeightRatio;
+  BoolOptionValue _randomAWR;
   BoolOptionValue _literalMaximalityAftercheck;
   BoolOptionValue _arityCheck;
   

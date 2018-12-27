@@ -29,6 +29,7 @@
 #include "Lib/Environment.hpp"
 #include "Lib/Int.hpp"
 #include "Lib/Timer.hpp"
+#include "Lib/Random.hpp"
 #include "Kernel/Term.hpp"
 #include "Kernel/Clause.hpp"
 #include "Kernel/Signature.hpp"
@@ -57,6 +58,7 @@ AWPassiveClauseContainer::AWPassiveClauseContainer(const Options& opt)
 
   _ageRatio = _opt.ageRatio();
   _weightRatio = _opt.weightRatio();
+  _randomize = _opt.randomAWR();
   ASS_GE(_ageRatio, 0);
   ASS_GE(_weightRatio, 0);
   ASS(_ageRatio > 0 || _weightRatio > 0);
@@ -271,7 +273,9 @@ Clause* AWPassiveClauseContainer::popSelected()
   else if (! _weightRatio) {
     byWeight = false;
   }
-  else if (_balance > 0) {
+  else if (_randomize) {
+    byWeight = (Random::getInteger(_ageRatio+_weightRatio) < _weightRatio);
+  } else if (_balance > 0) {
     byWeight = true;
   }
   else if (_balance < 0) {
