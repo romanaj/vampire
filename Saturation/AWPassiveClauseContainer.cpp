@@ -57,6 +57,10 @@ AWPassiveClauseContainer::AWPassiveClauseContainer(const Options& opt)
 
   _ageRatio = _opt.ageRatio();
   _weightRatio = _opt.weightRatio();
+
+  _flip = _opt.awrFlip();
+  _flipTime = _opt.timeLimitInDeciseconds()/2;
+
   ASS_GE(_ageRatio, 0);
   ASS_GE(_weightRatio, 0);
   ASS(_ageRatio > 0 || _weightRatio > 0);
@@ -261,6 +265,11 @@ Clause* AWPassiveClauseContainer::popSelected()
 {
   CALL("AWPassiveClauseContainer::popSelected");
   ASS( ! isEmpty());
+
+  if (_flip && env.timer->elapsedDeciseconds() > _flipTime) {
+    _flip = false;
+    std::swap(_ageRatio,_weightRatio);
+  }
 
   _size--;
 

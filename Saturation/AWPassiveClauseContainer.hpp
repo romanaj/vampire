@@ -111,6 +111,9 @@ private:
    * then by weight */
   int _balance;
 
+  bool _flip;
+  int _flipTime;
+
   unsigned _size;
 
   const Options& _opt;
