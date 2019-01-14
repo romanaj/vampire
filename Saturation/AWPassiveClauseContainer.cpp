@@ -38,6 +38,7 @@
 
 #include "SaturationAlgorithm.hpp"
 
+#include <cstdlib>
 #if VDEBUG
 #include <iostream>
 #endif
@@ -55,12 +56,17 @@ AWPassiveClauseContainer::AWPassiveClauseContainer(const Options& opt)
 {
   CALL("AWPassiveClauseContainer::AWPassiveClauseContainer");
 
+
   _ageRatio = _opt.ageRatio();
   _weightRatio = _opt.weightRatio();
   ASS_GE(_ageRatio, 0);
   ASS_GE(_weightRatio, 0);
   ASS(_ageRatio > 0 || _weightRatio > 0);
 
+  const char *stream_path = getenv("VAMPIRE_AW_STREAM");
+  ASS(stream_path);
+  BYPASSING_ALLOCATOR;
+  _aw_stream = new std::ifstream(stream_path);
 }
 
 AWPassiveClauseContainer::~AWPassiveClauseContainer()
@@ -71,6 +77,9 @@ AWPassiveClauseContainer::~AWPassiveClauseContainer()
     ASS(cl->store()==Clause::PASSIVE);
     cl->setStore(Clause::NONE);
   }
+
+  BYPASSING_ALLOCATOR;
+  delete _aw_stream;
 }
 
 ClauseIterator AWPassiveClauseContainer::iterator()
@@ -262,6 +271,8 @@ Clause* AWPassiveClauseContainer::popSelected()
   CALL("AWPassiveClauseContainer::popSelected");
   ASS( ! isEmpty());
 
+  // fails and leaves untouched if at end of _aw_stream
+  *_aw_stream >> _ageRatio >> _weightRatio;
   _size--;
 
   bool byWeight;

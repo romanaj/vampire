@@ -32,6 +32,8 @@
 
 #include "Lib/Allocator.hpp"
 
+#include <fstream>
+
 namespace Saturation {
 
 using namespace Kernel;
@@ -114,6 +116,9 @@ private:
   unsigned _size;
 
   const Options& _opt;
+
+  // Age/weight stream
+  std::ifstream *_aw_stream;
 }; // class AWPassiveClauseContainer
 
 /**
