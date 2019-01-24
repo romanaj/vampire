@@ -70,7 +70,7 @@ Signature::Symbol::Symbol(const vstring& nm,unsigned arity, bool interpreted, bo
   }
   if (_interpreted || isProtectedName(nm)) {
     markProtected();
-  }
+    }
 } // Symbol::Symbol
 
 /**
@@ -244,6 +244,28 @@ Signature::~Signature ()
     _preds[i]->destroyPredSymbol();
   }
 } // Signature::~Signature
+
+/**
+ * Add group neutral to the signature.
+ */
+unsigned Signature::addGroupNeutral(const vstring& name){
+   CALL("Signature::addGroupNeutral");
+   
+   vstring key = name;
+   unsigned result;
+   if (_funNames.find(key, result)) {
+     return result;
+   }
+   _strings++;
+
+  result = _funs.length();
+  Symbol* sym =  new Symbol(name,0); //adds Symbol with name '$neutral' and arity 0
+  sym->setType(OperatorType::getConstantsType(Sorts::SRT_GRELEM)); //the symbol gets the right type
+  _funs.push(sym);
+  _funNames.insert(key,result);
+  return result; 
+}// Signature::addGroupNeutral
+
 
 /**
  * Add an integer constant to the signature. If defaultSort is true, treat it as
