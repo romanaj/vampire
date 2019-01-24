@@ -62,6 +62,7 @@ private:
   void addAssociativity(Interpretation op);
   void addRightIdentity(Interpretation op, TermList idElement);
   void addLeftIdentity(Interpretation op, TermList idElement);
+  void addGroupAxioms(Interpretation op, Interpretation inverse, TermList idElement);
   void addCommutativeGroupAxioms(Interpretation op, Interpretation inverse, TermList idElement);
 
   void addRightInverse(Interpretation op, Interpretation inverse);
