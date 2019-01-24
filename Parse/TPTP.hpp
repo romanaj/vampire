@@ -159,6 +159,10 @@ public:
     T_RATIONAL_TYPE,
     /** $real */
     T_REAL_TYPE,
+    /** $group_elem*/
+    T_GR_ELEM_TYPE,
+    /** $neutral*/
+    T_NEUTRAL,
     /** $tuple type */
     T_TUPLE,
     /** theory functions */
@@ -831,4 +835,3 @@ private:
 }
 
 #endif
-
