@@ -263,6 +263,36 @@ void TheoryAxioms::addCommutativeGroupAxioms(Interpretation op, Interpretation i
 } // TheoryAxioms::addCommutativeGroupAxioms
 
 /**
+* Add axioms for group with addition @c op, inverse @c inverse and unit @c e:
+* we use the necessary part from the function
+* addCommutativeGroupAxioms written by @author Andrei Voronkov
+*/
+void TheoryAxioms::addGroupAxioms(Interpretation op, Interpretation inverse,
+TermList e)
+{
+CALL("TheoryAxioms::addGroupAxioms");
+ASS(theory − >isFunction(op));
+ASS_EQ(theory − >getArity(op),2);
+ASS(theory − >isFunction(inverse));
+ASS_EQ(theory − >getArity(inverse),1);
+addAssociativity(op);
+addRightIdentity(op,e);
+// f(x, i (x))=e
+unsigned f = env.signature − >getInterpretingSymbol(op);
+unsigned i = env.signature − >getInterpretingSymbol(inverse);
+unsigned srt = theory − >getOperationSort(op);
+ASS_EQ(srt, theory − >getOperationSort(inverse));
+TermList x(0, false ) ;
+TermList y(1, false ) ;
+TermList fxy(Term::create2(f , x,y)) ;
+TermList ix(Term::create1( i , x)) ;
+TermList iy(Term::create1( i , y)) ;
+TermList fx_ix(Term::create2( f , x, ix ) ) ;
+Literal ∗ eq2 = Literal :: createEquality(true , fx_ix , e, srt ) ;
+addTheoryUnitClause(eq2, EXPENSIVE);
+}
+
+/**
  * Add axiom op(op(x,i(y)),y) = x
  * e.g. (x+(-y))+y = x
  */
@@ -992,6 +1022,15 @@ void TheoryAxioms::apply()
   CALL("TheoryAxioms::applyProperty");
   Property* prop = _prb.getProperty();
   bool modified = false;
+  bool haveGroupOperation =
+   prop->hasInterpretedOperation(Theory::GROUP_OPERATION) || 
+   prop->hasInterpretedOperation(Theory::GROUP_INVERSE);
+     
+   if(haveGroupOperation){
+    TermList neutral(theory->representGroupNeutral());
+    addGroupAxioms(Theory::GROUP_OPERATION, Theory::GROUP_INVERSE, neutral);
+   }
+	
   bool haveIntPlus =
     prop->hasInterpretedOperation(Theory::INT_PLUS) ||
     prop->hasInterpretedOperation(Theory::INT_UNARY_MINUS) ||
