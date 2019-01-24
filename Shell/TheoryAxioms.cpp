@@ -278,10 +278,10 @@ ASS_EQ(theory->getArity(inverse),1);
 addAssociativity(op);
 addRightIdentity(op,e);
 // f(x, i (x))=e
-unsigned f = env.signature − >getInterpretingSymbol(op);
-unsigned i = env.signature − >getInterpretingSymbol(inverse);
-unsigned srt = theory − >getOperationSort(op);
-ASS_EQ(srt, theory − >getOperationSort(inverse));
+unsigned f = env.signature−>getInterpretingSymbol(op);
+unsigned i = env.signature−>getInterpretingSymbol(inverse);
+unsigned srt = theory−>getOperationSort(op);
+ASS_EQ(srt, theory−>getOperationSort(inverse));
 TermList x(0, false ) ;
 TermList y(1, false ) ;
 TermList fxy(Term::create2(f , x,y)) ;
