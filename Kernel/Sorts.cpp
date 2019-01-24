@@ -56,6 +56,9 @@ Sorts::Sorts()
 
   aux = addSort("$real",true);
   ASS_EQ(aux, SRT_REAL);
+
+  aux = addSort("$group_elem",true);
+  ASS_EQ(aux, SRT_GRELEM);
     
  _hasSort = false;
 } // Sorts::Sorts
