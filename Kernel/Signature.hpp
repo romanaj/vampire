@@ -183,7 +183,14 @@ class Signature
 
     inline void markInductionSkolem(){ _inductionSkolem=1; _skolem=1;}
     inline bool inductionSkolem(){ return _inductionSkolem;}
-      
+    
+    
+    //-------------------GROUP----------------------
+    /** Return true if symbol is the  Group Neutral */
+    inline bool groupNeutral() const
+    { return interpreted() && arity()==0 && fnType()->result()==Sorts::SRT_GRELEM; }
+
+    //-------------------------------------------------------------
     /** Return true if symbol is an integer constant */
     inline bool integerConstant() const
     { return interpreted() && arity()==0 && fnType()->result()==Sorts::SRT_INTEGER; }
@@ -244,7 +251,7 @@ class Signature
     /** Return the interpreted function that corresponds to this symbol */
     inline Interpretation getInterpretation() const { ASS_REP(interpreted(), _name); return _interp; }
   };
-
+ 
   class IntegerSymbol
   : public Symbol
   {
@@ -350,6 +357,8 @@ class Signature
   unsigned addNamePredicate(unsigned arity);
 
   // Interpreted symbol declarations
+  unsigned addGroupNeutral(const vstring& name);
+  
   unsigned addIntegerConstant(const vstring& number,bool defaultSort);
   unsigned addRationalConstant(const vstring& numerator, const vstring& denominator,bool defaultSort);
   unsigned addRealConstant(const vstring& number,bool defaultSort);
