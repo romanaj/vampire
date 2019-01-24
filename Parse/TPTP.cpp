@@ -366,6 +366,10 @@ vstring TPTP::toString(Tag tag)
     return "$real";
   case T_INTEGER_TYPE:
     return "$int";
+  case T_GR_ELEM_TYPE:
+    return "$group_elem";
+  case T_NEUTRAL:
+    return "";
   case T_TUPLE:
     return "$tuple";
   case T_THEORY_SORT:
@@ -930,6 +934,12 @@ void TPTP::readReserved(Token& tok)
   }
   else if (tok.content == "$real") {
     tok.tag = T_REAL_TYPE;
+  }
+  else if (tok.content == "$group_elem"){
+    tok.tag = T_GR_ELEM_TYPE;
+  }
+  else if (tok.content == "$neutral") {
+     tok.tag = T_NEUTRAL;
   }
   else if (tok.content == "$tuple") {
       tok.tag = T_TUPLE;
@@ -2377,7 +2387,10 @@ void TPTP::term()
       _states.push(TERM_INFIX);
       _states.push(FUN_APP);
       return;
-
+    
+    case T_NEUTRAL:
+    number = env.signature->addGroupNeutral(tok.content);
+    break;
     case T_STRING:
     case T_INT:
     case T_REAL:
@@ -3590,6 +3603,10 @@ unsigned TPTP::readSort()
   case T_DEFAULT_TYPE:
     return Sorts::SRT_DEFAULT;
 
+  case T_GR_ELEM_TYPE:
+  case T_NEUTRAL:
+    return Sorts::SRT_GRELEM;
+
   case T_BOOL_TYPE:
     return Sorts::SRT_BOOL;
 
@@ -3721,6 +3738,26 @@ Formula* TPTP::makeJunction (Connective c,Formula* lhs,Formula* rhs)
 unsigned TPTP::addFunction(vstring name,int arity,bool& added,TermList& arg)
 {
   CALL("TPTP::addFunction");
+
+ /**group operations
+ *@author Romana Jezek
+ */
+  if (name == "$group_op") {
+    if(sortOf(arg)!=Sorts::SRT_GRELEM) {
+      USER_ERROR("$groupoperation can only be used with group_elem type");
+    }
+    else {
+        return env.signature->addInterpretedFunction(Theory::GROUP_OPERATION, name);
+    }
+  } 
+  if(name == "$group_inverse") {
+    if(sortOf(arg)!=Sorts::SRT_GRELEM) {
+      USER_ERROR("$group_inverse can only be used with group_elem type");
+    }
+    else {
+       return env.signature->addInterpretedFunction(Theory::GROUP_INVERSE, name);
+    }
+  }
 
   if (name == "$sum") {
     return addOverloadedFunction(name,arity,2,added,arg,
