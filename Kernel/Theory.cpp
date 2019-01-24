@@ -587,6 +587,8 @@ unsigned Theory::getArity(Interpretation i)
   case REAL_CEILING:
   case REAL_TRUNCATE:
   case REAL_ROUND:
+  
+  case GROUP_INVERSE:
 
     return 1;
 
@@ -639,6 +641,8 @@ unsigned Theory::getArity(Interpretation i)
   case REAL_REMAINDER_E:
   case REAL_REMAINDER_T:
   case REAL_REMAINDER_F:
+
+  case GROUP_OPERATION:
 
   case ARRAY_SELECT:
   case ARRAY_BOOL_SELECT:
@@ -723,6 +727,9 @@ bool Theory::isFunction(Interpretation i)
   case REAL_CEILING:
   case REAL_TRUNCATE:
   case REAL_ROUND:
+
+  case GROUP_OPERATION:
+  case GROUP_INVERSE:
           
   case ARRAY_SELECT:
   case ARRAY_STORE:
@@ -935,7 +942,10 @@ unsigned Theory::getOperationSort(Interpretation i)
   case REAL_IS_INT:
   case REAL_IS_RAT:
   case REAL_IS_REAL:
-    return Sorts::SRT_REAL;
+    return Sorts::SRT_REAL;   
+  case GROUP_OPERATION:
+  case GROUP_INVERSE:
+    return Sorts:: SRT_GRELEM;   
 
   default:
     ASSERTION_VIOLATION;
@@ -1306,6 +1316,11 @@ vstring Theory::getInterpretationName(Interpretation interp) {
       return "$select";
     case ARRAY_STORE:
       return "$store";
+    case GROUP_OPERATION:
+       return "$group_op";
+    case GROUP_INVERSE:
+       return "$group_inverse";
+
     default:
       ASSERTION_VIOLATION_REP(interp);
   }
@@ -1694,6 +1709,18 @@ bool Theory::tryInterpretConstant(const Term* t, RealConstantType& res)
   return true;
 } // // Theory::tryInterpretConstant
 
+
+/**represent the neutral element of a group as function with zero arguments
+*@author Romana Jezek
+*/
+Term* Theory::representGroupNeutral()
+{
+  CALL("Theory::representGroupNeutral()");
+
+  unsigned func = env.signature->addGroupNeutral("$neutral");
+  return Term::create(func,0,0);
+}
+
 Term* Theory::representConstant(const IntegerConstantType& num)
 {
   CALL("Theory::representConstant(const IntegerConstantType&)");
@@ -1878,22 +1905,3 @@ vstring Theory::tryGetInterpretedLaTeXName(unsigned func, bool pred,bool polarit
 }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
