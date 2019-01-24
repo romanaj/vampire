@@ -271,10 +271,10 @@ void TheoryAxioms::addGroupAxioms(Interpretation op, Interpretation inverse,
 TermList e)
 {
 CALL("TheoryAxioms::addGroupAxioms");
-ASS(theory − >isFunction(op));
-ASS_EQ(theory − >getArity(op),2);
-ASS(theory − >isFunction(inverse));
-ASS_EQ(theory − >getArity(inverse),1);
+ASS(theory->isFunction(op));
+ASS_EQ(theory->getArity(op),2);
+ASS(theory->isFunction(inverse));
+ASS_EQ(theory->getArity(inverse),1);
 addAssociativity(op);
 addRightIdentity(op,e);
 // f(x, i (x))=e
