@@ -379,6 +379,12 @@ public:
     ARRAY_BOOL_SELECT,
     ARRAY_STORE,
 
+    //-----------------GROUP------------------------------
+    //group operation
+    GROUP_OPERATION,
+    GROUP_INVERSE,
+//-----------------------------------------------------------
+
     INVALID_INTERPRETATION // LEAVE THIS AS THE LAST ELEMENT OF THE ENUM
   };
 
@@ -544,6 +550,10 @@ public:
     return tryInterpretConstant(trm.term(),res);
   }
   bool tryInterpretConstant(const Term* t, RealConstantType& res);
+  
+  //------------------GROUP--------------------
+  Term* representGroupNeutral();
+//---------------------------------------------------
 
   Term* representConstant(const IntegerConstantType& num);
   Term* representConstant(const RationalConstantType& num);
