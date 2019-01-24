@@ -2389,8 +2389,6 @@ void TPTP::term()
       return;
     
     case T_NEUTRAL:
-    number = env.signature->addGroupNeutral(tok.content);
-    break;
     case T_STRING:
     case T_INT:
     case T_REAL:
@@ -2398,6 +2396,9 @@ void TPTP::term()
       resetToks();
       unsigned number;
       switch (tok.tag) {
+        case T_NEUTRAL:
+          number = env.signature->addGroupNeutral(tok.content);
+        break;
         case T_STRING:
           number = env.signature->addStringConstant(tok.content);
           break;
